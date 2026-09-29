@@ -1,0 +1,112 @@
+<Page x:Class="CinemaTicketBooking.Views.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Dashboard"
+      Background="Transparent">
+    <Grid Margin="28,8,28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <StackPanel>
+                <TextBlock Text="Tonight at Lumina" Style="{StaticResource PageTitle}" />
+                <TextBlock Text="Today's ticket desk — sales, open seats, and the next screenings." Style="{StaticResource PageSubtitle}" />
+            </StackPanel>
+            <ui:Button Content="Refresh" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding RefreshCommand}" />
+        </Grid>
+
+        <UniformGrid Grid.Row="1" Columns="4" Margin="0,20,0,8">
+            <ui:Card Margin="0,0,12,12" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="Revenue today" Opacity="0.72" />
+                    <TextBlock Text="{Binding RevenueToday}" Style="{StaticResource StatValue}" />
+                </StackPanel>
+            </ui:Card>
+            <ui:Card Margin="0,0,12,12" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="Tickets sold" Opacity="0.72" />
+                    <TextBlock Text="{Binding TicketsToday}" Style="{StaticResource StatValue}" />
+                </StackPanel>
+            </ui:Card>
+            <ui:Card Margin="0,0,12,12" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="Screenings" Opacity="0.72" />
+                    <TextBlock Text="{Binding ShowsToday}" Style="{StaticResource StatValue}" />
+                </StackPanel>
+            </ui:Card>
+            <ui:Card Margin="0,0,0,12" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="Seats still open" Opacity="0.72" />
+                    <TextBlock Text="{Binding SeatsLeftToday}" Style="{StaticResource StatValue}" />
+                </StackPanel>
+            </ui:Card>
+        </UniformGrid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ui:Card Padding="16">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Coming up" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12" />
+                    <TextBlock DockPanel.Dock="Top"
+                               Text="No upcoming screenings."
+                               Opacity="0.7"
+                               Margin="0,0,0,8"
+                               Visibility="{Binding HasUpcoming, Converter={StaticResource InverseBoolToVis}}" />
+                    <ListBox ItemsSource="{Binding Upcoming}" BorderThickness="0" Background="Transparent">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,6">
+                                    <TextBlock Text="{Binding MovieTitle}" FontWeight="SemiBold" />
+                                    <TextBlock Opacity="0.75" Text="{Binding WhenLabel}" />
+                                    <TextBlock Opacity="0.75" Text="{Binding HallName}" />
+                                    <TextBlock Foreground="{StaticResource CinemaGoldBrush}" Text="{Binding OccupancyLabel}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </ui:Card>
+
+            <ui:Card Grid.Column="2" Padding="16">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Latest tickets" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12" />
+                    <ListBox ItemsSource="{Binding RecentBookings}" BorderThickness="0" Background="Transparent">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock FontWeight="SemiBold">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0}  ·  {1}">
+                                                    <Binding Path="BookingCode" />
+                                                    <Binding Path="CustomerName" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                        <TextBlock Opacity="0.75" Text="{Binding MovieTitle}" />
+                                        <TextBlock Opacity="0.75" Text="{Binding SeatSummary}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Foreground="{StaticResource CinemaGoldBrush}" VerticalAlignment="Center" Text="{Binding TotalAmount, StringFormat=C}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBlock DockPanel.Dock="Bottom" Opacity="0.55" FontSize="12" Margin="0,12,0,0" TextWrapping="Wrap" Text="{Binding DatabasePath, StringFormat=Database: {0}}" />
+                </DockPanel>
+            </ui:Card>
+        </Grid>
+    </Grid>
+</Page>

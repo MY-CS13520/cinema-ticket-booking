@@ -1,0 +1,133 @@
+<Page x:Class="CinemaTicketBooking.Views.ReportsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Sales reports"
+      Background="Transparent">
+    <Grid Margin="28,8,28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Text="Sales reports" Style="{StaticResource PageTitle}" />
+            <TextBlock Text="See how the cinema performed between two dates. Gross is money collected. Net subtracts refunds." Style="{StaticResource PageSubtitle}" />
+        </StackPanel>
+
+        <ui:InfoBar Grid.Row="1"
+                    Margin="0,16,0,0"
+                    Title="{Binding StatusMessage}"
+                    IsOpen="{Binding HasStatus, Mode=TwoWay}"
+                    IsClosable="True"
+                    Severity="Success" />
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,16,0,0">
+            <StackPanel Width="180" Margin="0,0,12,0">
+                <TextBlock Text="From" Style="{StaticResource FieldLabel}" />
+                <DatePicker SelectedDate="{Binding From}" />
+            </StackPanel>
+            <StackPanel Width="180" Margin="0,0,12,0">
+                <TextBlock Text="To" Style="{StaticResource FieldLabel}" />
+                <DatePicker SelectedDate="{Binding To}" />
+            </StackPanel>
+            <ui:Button Appearance="Primary" Content="Run report" VerticalAlignment="Bottom" Command="{Binding RefreshCommand}" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="3" Margin="0,16,0,0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <UniformGrid Columns="3" Margin="0,0,0,8">
+                    <ui:Card Margin="0,0,12,12" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Tickets" Opacity="0.72" />
+                            <TextBlock Text="{Binding TicketsSold}" Style="{StaticResource StatValue}" />
+                        </StackPanel>
+                    </ui:Card>
+                    <ui:Card Margin="0,0,12,12" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Bookings" Opacity="0.72" />
+                            <TextBlock Text="{Binding BookingCount}" Style="{StaticResource StatValue}" />
+                        </StackPanel>
+                    </ui:Card>
+                    <ui:Card Margin="0,0,0,12" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Net revenue" Opacity="0.72" />
+                            <TextBlock Text="{Binding NetRevenue}" Style="{StaticResource StatValue}" />
+                        </StackPanel>
+                    </ui:Card>
+                </UniformGrid>
+                <UniformGrid Columns="3" Margin="0,0,0,8">
+                    <ui:Card Margin="0,0,12,12" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Gross collected" Opacity="0.72" />
+                            <TextBlock Text="{Binding GrossRevenue}" Style="{StaticResource StatValue}" />
+                        </StackPanel>
+                    </ui:Card>
+                    <ui:Card Margin="0,0,12,12" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Still pending" Opacity="0.72" />
+                            <TextBlock Text="{Binding PendingAmount}" Style="{StaticResource StatValue}" />
+                        </StackPanel>
+                    </ui:Card>
+                    <ui:Card Margin="0,0,0,12" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Refunds" Opacity="0.72" />
+                            <TextBlock Text="{Binding Refunds}" Style="{StaticResource StatValue}" />
+                        </StackPanel>
+                    </ui:Card>
+                </UniformGrid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ui:Card Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="By film" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <TextBlock Text="No confirmed tickets in this range."
+                                       Opacity="0.7"
+                                       Visibility="{Binding HasMovies, Converter={StaticResource InverseBoolToVis}}" />
+                            <ItemsControl ItemsSource="{Binding ByMovie}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,12">
+                                            <Grid>
+                                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                                                <TextBlock HorizontalAlignment="Right" Foreground="{StaticResource CinemaGoldBrush}" Text="{Binding Revenue, StringFormat=C}" />
+                                            </Grid>
+                                            <TextBlock Opacity="0.7" Text="{Binding Tickets, StringFormat={}{0} tickets}" Margin="0,2,0,4" />
+                                            <ProgressBar Height="8" Maximum="100" Value="{Binding Share}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ui:Card>
+                    <ui:Card Grid.Column="2" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="By payment method" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <ItemsControl ItemsSource="{Binding ByMethod}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,12">
+                                            <Grid>
+                                                <TextBlock Text="{Binding Method}" FontWeight="SemiBold" />
+                                                <TextBlock HorizontalAlignment="Right" Foreground="{StaticResource CinemaGoldBrush}" Text="{Binding Revenue, StringFormat=C}" />
+                                            </Grid>
+                                            <TextBlock Opacity="0.7" Text="{Binding Payments, StringFormat={}{0} payments}" Margin="0,2,0,4" />
+                                            <ProgressBar Height="8" Maximum="100" Value="{Binding Share}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ui:Card>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

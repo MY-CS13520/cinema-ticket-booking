@@ -1,0 +1,84 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:CinemaTicketBooking.Converters"
+    xmlns:vm="clr-namespace:CinemaTicketBooking.ViewModels">
+
+    <conv:InverseBooleanConverter x:Key="InverseBool" />
+    <conv:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+
+    <Color x:Key="CinemaGoldColor">#E4B15A</Color>
+    <Color x:Key="CinemaInkColor">#14110C</Color>
+    <SolidColorBrush x:Key="CinemaGoldBrush" Color="{StaticResource CinemaGoldColor}" />
+    <SolidColorBrush x:Key="CinemaInkBrush" Color="{StaticResource CinemaInkColor}" />
+
+    <Style x:Key="PageTitle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="PageSubtitle" TargetType="TextBlock">
+        <Setter Property="Opacity" Value="0.72" />
+        <Setter Property="Margin" Value="0,4,0,0" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="FieldLabel" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Opacity" Value="0.72" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+    </Style>
+
+    <Style x:Key="StatValue" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource CinemaGoldBrush}" />
+        <Setter Property="Margin" Value="0,6,0,0" />
+    </Style>
+
+    <Style x:Key="SeatButtonStyle" TargetType="Button">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Margin" Value="2" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="#F4F1EA" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="SeatBorder"
+                            Background="#2A3140"
+                            BorderBrush="#66E4B15A"
+                            BorderThickness="1"
+                            CornerRadius="6">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding State}" Value="{x:Static vm:SeatState.Selected}">
+                            <Setter TargetName="SeatBorder" Property="Background" Value="#E4B15A" />
+                            <Setter Property="Foreground" Value="#1A1408" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding State}" Value="{x:Static vm:SeatState.Booked}">
+                            <Setter TargetName="SeatBorder" Property="Background" Value="#3A3034" />
+                            <Setter TargetName="SeatBorder" Property="BorderBrush" Value="#553A3034" />
+                            <Setter Property="Foreground" Value="#8D8488" />
+                        </DataTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="SeatBorder" Property="Opacity" Value="0.82" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding State}" Value="{x:Static vm:SeatState.Booked}">
+                <Setter Property="IsEnabled" Value="False" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>
