@@ -15,9 +15,9 @@ public interface IBookingService
 
     Task<TicketReceipt> CreateAsync(BookingDraft draft);
 
-    Task<IReadOnlyList<BookingRow>> SearchAsync(string? query);
+    Task<IReadOnlyList<BookingRow>> SearchAsync(string? query, int? accountId = null);
 
-    Task CancelAsync(int bookingId);
+    Task CancelAsync(int bookingId, int? restrictToAccountId = null);
 }
 
 /// <inheritdoc cref="IBookingService"/>
@@ -146,6 +146,7 @@ public sealed class BookingService : IBookingService
             CustomerName = name,
             Phone = phone,
             Email = email,
+            AccountId = draft.AccountId,
             BookedAt = now,
             Status = BookingStatus.Confirmed,
             TotalAmount = total,
@@ -192,7 +193,7 @@ public sealed class BookingService : IBookingService
         };
     }
 
-    public async Task<IReadOnlyList<BookingRow>> SearchAsync(string? query)
+    public async Task<IReadOnlyList<BookingRow>> SearchAsync(string? query, int? accountId = null)
     {
         await using var db = await _dbFactory.CreateDbContextAsync();
         var bookings = await db.Bookings
@@ -202,6 +203,9 @@ public sealed class BookingService : IBookingService
             .Include(booking => booking.Showtime).ThenInclude(show => show.Hall)
             .OrderByDescending(booking => booking.BookedAt)
             .ToListAsync();
+
+        if (accountId is int ownerId)
+            bookings = bookings.Where(booking => booking.AccountId == ownerId).ToList();
 
         var needle = query?.Trim();
         if (!string.IsNullOrEmpty(needle))
@@ -217,7 +221,7 @@ public sealed class BookingService : IBookingService
         return bookings.Select(RowFactory.Booking).ToList();
     }
 
-    public async Task CancelAsync(int bookingId)
+    public async Task CancelAsync(int bookingId, int? restrictToAccountId = null)
     {
         await using var db = await _dbFactory.CreateDbContextAsync();
         var booking = await db.Bookings
@@ -225,6 +229,9 @@ public sealed class BookingService : IBookingService
             .Include(item => item.Payment)
             .FirstOrDefaultAsync(item => item.Id == bookingId)
             ?? throw new CinemaValidationException("That booking is no longer on file.");
+
+        if (restrictToAccountId is int ownerId && booking.AccountId != ownerId)
+            throw new CinemaValidationException("You can only cancel tickets on your own account.");
 
         if (booking.Status == BookingStatus.Cancelled)
             throw new CinemaValidationException("This booking is already cancelled.");

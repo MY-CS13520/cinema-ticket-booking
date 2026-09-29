@@ -6,6 +6,7 @@
 
     <conv:InverseBooleanConverter x:Key="InverseBool" />
     <conv:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+    <conv:BooleanToVisibilityConverter x:Key="BoolToVis" />
 
     <Color x:Key="CinemaGoldColor">#E4B15A</Color>
     <Color x:Key="CinemaInkColor">#14110C</Color>

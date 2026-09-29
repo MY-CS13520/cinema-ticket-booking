@@ -40,3 +40,10 @@ public enum PaymentStatus
     Paid,
     Refunded
 }
+
+/// <summary>Guest accounts book tickets. Staff accounts run the full desk.</summary>
+public enum AccountRole
+{
+    User,
+    Admin
+}

@@ -14,6 +14,16 @@ public sealed class InverseBooleanConverter : IValueConverter
         => throw new NotSupportedException();
 }
 
+/// <summary>Shows a control when a flag is true.</summary>
+public sealed class BooleanToVisibilityConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is true ? Visibility.Visible : Visibility.Collapsed;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotSupportedException();
+}
+
 /// <summary>Shows a placeholder when a flag is false.</summary>
 public sealed class InverseBooleanToVisibilityConverter : IValueConverter
 {

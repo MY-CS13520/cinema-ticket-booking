@@ -23,18 +23,22 @@ public partial class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        ShutdownMode = ShutdownMode.OnMainWindowClose;
+        CamCursor.Install();
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
         var services = new ServiceCollection();
         services.AddDbContextFactory<CinemaDbContext>(options =>
             options.UseSqlite($"Data Source={AppPaths.DatabaseFile}"));
 
+        services.AddSingleton<DeskSession>();
+        services.AddSingleton<IAuthService, AuthService>();
         services.AddSingleton<IMovieService, MovieService>();
         services.AddSingleton<IScheduleService, ScheduleService>();
         services.AddSingleton<IBookingService, BookingService>();
         services.AddSingleton<IPaymentService, PaymentService>();
         services.AddSingleton<IReportService, ReportService>();
 
+        services.AddTransient<LoginViewModel>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<MoviesViewModel>();
         services.AddTransient<ScheduleViewModel>();
@@ -61,6 +65,14 @@ public partial class App : Application
             return;
         }
 
+        var login = new LoginWindow();
+        if (login.ShowDialog() != true)
+        {
+            Shutdown();
+            return;
+        }
+
+        ShutdownMode = ShutdownMode.OnMainWindowClose;
         var window = new MainWindow();
         MainWindow = window;
         window.Show();

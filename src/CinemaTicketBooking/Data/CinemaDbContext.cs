@@ -26,6 +26,8 @@ public class CinemaDbContext : DbContext
 
     public DbSet<Payment> Payments => Set<Payment>();
 
+    public DbSet<Account> Accounts => Set<Account>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         ConfigureMovie(modelBuilder);
@@ -34,6 +36,7 @@ public class CinemaDbContext : DbContext
         ConfigureBooking(modelBuilder);
         ConfigureSeat(modelBuilder);
         ConfigurePayment(modelBuilder);
+        ConfigureAccount(modelBuilder);
     }
 
     private static void ConfigureMovie(ModelBuilder modelBuilder)
@@ -89,6 +92,22 @@ public class CinemaDbContext : DbContext
             .WithMany(s => s.Bookings)
             .HasForeignKey(b => b.ShowtimeId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        booking.HasOne(b => b.Account)
+            .WithMany()
+            .HasForeignKey(b => b.AccountId)
+            .OnDelete(DeleteBehavior.SetNull);
+    }
+
+    private static void ConfigureAccount(ModelBuilder modelBuilder)
+    {
+        var account = modelBuilder.Entity<Account>();
+        account.Property(a => a.Username).HasMaxLength(40).IsRequired();
+        account.Property(a => a.DisplayName).HasMaxLength(80).IsRequired();
+        account.Property(a => a.PasswordHash).HasMaxLength(100).IsRequired();
+        account.Property(a => a.PasswordSalt).HasMaxLength(50).IsRequired();
+        account.Property(a => a.Role).HasConversion<string>().HasMaxLength(16);
+        account.HasIndex(a => a.Username).IsUnique();
     }
 
     private static void ConfigureSeat(ModelBuilder modelBuilder)

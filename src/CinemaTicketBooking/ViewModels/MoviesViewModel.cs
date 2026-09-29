@@ -8,14 +8,24 @@ namespace CinemaTicketBooking.ViewModels;
 public partial class MoviesViewModel : ViewModelBase
 {
     private readonly IMovieService _movies;
+    private readonly DeskSession _session;
     private readonly List<Movie> _all = [];
     private int? _editingId;
     private bool _suppressSelection;
 
-    public MoviesViewModel(IMovieService movies)
+    public MoviesViewModel(IMovieService movies, DeskSession session)
     {
         _movies = movies;
+        _session = session;
     }
+
+    public bool CanManage => _session.IsAdmin;
+
+    public string Heading => _session.IsAdmin ? "Movies" : "Now showing";
+
+    public string Subtitle => _session.IsAdmin
+        ? "Add a film to the catalogue, then schedule it in a hall."
+        : "Films currently on the board.";
 
     public ObservableCollection<Movie> Movies { get; } = [];
 

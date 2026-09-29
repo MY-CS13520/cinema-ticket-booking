@@ -13,8 +13,8 @@
 
         <Grid>
             <StackPanel>
-                <TextBlock Text="Movies" Style="{StaticResource PageTitle}" />
-                <TextBlock Text="Add a film to the catalogue, then schedule it in a hall." Style="{StaticResource PageSubtitle}" />
+                <TextBlock Text="{Binding Heading}" Style="{StaticResource PageTitle}" />
+                <TextBlock Text="{Binding Subtitle}" Style="{StaticResource PageSubtitle}" />
             </StackPanel>
             <ui:Button Content="Refresh" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding RefreshCommand}" />
         </Grid>
@@ -28,9 +28,8 @@
 
         <Grid Grid.Row="2" Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.4*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="*" MinWidth="320" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <ui:Card Padding="16">
@@ -57,7 +56,8 @@
                 </DockPanel>
             </ui:Card>
 
-            <ui:Card Grid.Column="2" Padding="18">
+            <ui:Card Grid.Column="1" Padding="18" Margin="16,0,0,0" MinWidth="320"
+                     Visibility="{Binding CanManage, Converter={StaticResource BoolToVis}}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <TextBlock Text="{Binding EditorHeading}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14" />

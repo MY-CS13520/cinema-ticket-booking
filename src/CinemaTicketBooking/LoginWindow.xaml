@@ -1,0 +1,67 @@
+<ui:FluentWindow x:Class="CinemaTicketBooking.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="Sign in · Lumina Cinema"
+        Height="720"
+        Width="480"
+        MinHeight="640"
+        MinWidth="420"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:TitleBar Grid.Row="0" Title="Lumina Cinema" />
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="36,12,36,28">
+                <TextBlock Text="LUMINA" FontSize="28" FontWeight="Bold" Foreground="{StaticResource CinemaGoldBrush}" />
+                <TextBlock Text="{Binding RoleLabel}" Style="{StaticResource PageSubtitle}" Margin="0,4,0,18" />
+
+                <UniformGrid Columns="2" Margin="0,0,0,16">
+                    <ui:Button Content="Guest" Margin="0,0,8,0" Command="{Binding ChooseGuestCommand}" />
+                    <ui:Button Content="Staff" Command="{Binding ChooseStaffCommand}" />
+                </UniformGrid>
+
+                <TextBlock Text="{Binding DemoHint}" Opacity="0.7" TextWrapping="Wrap" Margin="0,0,0,16" />
+
+                <TextBlock Text="Username" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="UsernameInput" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+
+                <StackPanel Visibility="{Binding IsCreatingAccount, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Name on the ticket" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+                </StackPanel>
+
+                <TextBlock Text="Password" Style="{StaticResource FieldLabel}" />
+                <PasswordBox x:Name="PasswordInput" Margin="0,0,0,12" />
+
+                <StackPanel Visibility="{Binding IsCreatingAccount, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Confirm password" Style="{StaticResource FieldLabel}" />
+                    <PasswordBox x:Name="ConfirmInput" Margin="0,0,0,12" />
+                </StackPanel>
+
+                <ui:Button Appearance="Primary"
+                           HorizontalAlignment="Stretch"
+                           Content="{Binding SubmitLabel}"
+                           Margin="0,8,0,12"
+                           Click="Submit_Click" />
+
+                <ui:Button HorizontalAlignment="Stretch"
+                           Content="Create a guest account"
+                           Command="{Binding StartRegisterCommand}"
+                           Visibility="{Binding ShowCreateButton, Converter={StaticResource BoolToVis}}" />
+                <ui:Button HorizontalAlignment="Stretch"
+                           Content="Back to sign in"
+                           Margin="0,8,0,0"
+                           Command="{Binding CancelRegisterCommand}"
+                           Visibility="{Binding IsCreatingAccount, Converter={StaticResource BoolToVis}}" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</ui:FluentWindow>

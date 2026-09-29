@@ -13,8 +13,8 @@
 
         <Grid>
             <StackPanel>
-                <TextBlock Text="Bookings" Style="{StaticResource PageTitle}" />
-                <TextBlock Text="Find a ticket and cancel it if the guest is not coming. Seats go back on sale." Style="{StaticResource PageSubtitle}" />
+                <TextBlock Text="{Binding Heading}" Style="{StaticResource PageTitle}" />
+                <TextBlock Text="{Binding Subtitle}" Style="{StaticResource PageSubtitle}" />
             </StackPanel>
         </Grid>
 

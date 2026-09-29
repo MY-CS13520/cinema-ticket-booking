@@ -1,3 +1,4 @@
+using CinemaTicketBooking.Helpers;
 using CinemaTicketBooking.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,23 +17,48 @@ public static class DbInitializer
     {
         await using var db = await dbFactory.CreateDbContextAsync();
         await db.Database.EnsureCreatedAsync();
+        await SchemaPatch.ApplyAsync(db);
 
-        if (await db.Movies.AnyAsync())
-            return;
+        if (!await db.Movies.AnyAsync())
+        {
+            await using var transaction = await db.Database.BeginTransactionAsync();
 
-        await using var transaction = await db.Database.BeginTransactionAsync();
+            var halls = SeedHalls(db);
+            var movies = SeedMovies(db);
+            await db.SaveChangesAsync();
 
-        var halls = SeedHalls(db);
-        var movies = SeedMovies(db);
+            var showtimes = SeedShowtimes(db, movies, halls);
+            await db.SaveChangesAsync();
+
+            SeedBookings(db, movies, showtimes);
+            await db.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+        }
+
+        if (!await db.Accounts.AnyAsync())
+            await SeedAccountsAsync(db);
+    }
+
+    /// <summary>Demo doors so the guest and staff sign-in can be tried immediately.</summary>
+    private static async Task SeedAccountsAsync(CinemaDbContext db)
+    {
+        db.Accounts.Add(Account("admin", "Desk admin", "admin123", AccountRole.Admin));
+        db.Accounts.Add(Account("guest", "Ava Fernando", "guest123", AccountRole.User));
         await db.SaveChangesAsync();
+    }
 
-        var showtimes = SeedShowtimes(db, movies, halls);
-        await db.SaveChangesAsync();
-
-        SeedBookings(db, movies, showtimes);
-        await db.SaveChangesAsync();
-
-        await transaction.CommitAsync();
+    private static Account Account(string username, string displayName, string password, AccountRole role)
+    {
+        var (hash, salt) = PasswordHasher.Hash(password);
+        return new Account
+        {
+            Username = username,
+            DisplayName = displayName,
+            PasswordHash = hash,
+            PasswordSalt = salt,
+            Role = role
+        };
     }
 
     private static Dictionary<string, CinemaHall> SeedHalls(CinemaDbContext db)

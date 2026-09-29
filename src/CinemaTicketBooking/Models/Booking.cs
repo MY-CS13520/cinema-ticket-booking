@@ -20,6 +20,11 @@ public class Booking
 
     public string Email { get; set; } = string.Empty;
 
+    /// <summary>Set when a signed-in guest buys the ticket. Staff sales can leave this empty.</summary>
+    public int? AccountId { get; set; }
+
+    public Account? Account { get; set; }
+
     public DateTime BookedAt { get; set; }
 
     public BookingStatus Status { get; set; } = BookingStatus.Confirmed;

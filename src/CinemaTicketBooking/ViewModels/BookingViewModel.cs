@@ -10,11 +10,15 @@ namespace CinemaTicketBooking.ViewModels;
 public partial class BookingViewModel : ViewModelBase
 {
     private readonly IBookingService _bookings;
+    private readonly DeskSession _session;
     private bool _suppressSelection;
 
-    public BookingViewModel(IBookingService bookings)
+    public BookingViewModel(IBookingService bookings, DeskSession session)
     {
         _bookings = bookings;
+        _session = session;
+        if (!_session.IsAdmin)
+            CustomerName = _session.Current?.DisplayName ?? string.Empty;
     }
 
     public ObservableCollection<ShowtimeRow> Showtimes { get; } = [];
@@ -100,11 +104,12 @@ public partial class BookingViewModel : ViewModelBase
             Email = Email,
             Method = method,
             Status = status,
+            AccountId = _session.IsAdmin ? null : _session.Current?.Id,
             Seats = picks
         });
 
         var showId = SelectedShowtime.Id;
-        CustomerName = string.Empty;
+        CustomerName = _session.IsAdmin ? string.Empty : _session.Current?.DisplayName ?? string.Empty;
         Phone = string.Empty;
         Email = string.Empty;
         await ReloadAsync(showId);

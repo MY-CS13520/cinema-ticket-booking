@@ -45,6 +45,7 @@ public sealed class BookingDraft
     public string Email { get; init; } = string.Empty;
     public PaymentMethod Method { get; init; }
     public PaymentStatus Status { get; init; }
+    public int? AccountId { get; init; }
     public IReadOnlyList<SeatPick> Seats { get; init; } = [];
 }
 
